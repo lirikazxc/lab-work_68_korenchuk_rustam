@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Articles</title>
+{% endblock %}
+
+{% block content %}
+    {{ user }}
+    {{ request.user }}
+    <form method="get">
+        {% include "partial/search_form.html" with form=search_form %}
+    </form>
+    <br>
+    {% include 'partial/articles_list.html' %}
+{% endblock %}
+

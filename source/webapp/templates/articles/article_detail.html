@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block links %}
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{% url 'webapp:update_article' article.pk %}">Редактировать</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{% url 'webapp:delete_article' article.pk %}">Удалить</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="{% url 'webapp:create_comment' article.pk %}">Оставить
+            коммент</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+    <div class="card mt-3 text-center" style="">
+        <div class="card-body">
+            <h5 class="card-title">Название: {{ article.title }}</h5>
+            <h6 class="card-subtitle mb-2 text-body-secondary">Автор: {{ article.author }}</h6>
+            <p class="card-text">Контент: {{ article.content }}</p>
+            <p class="card-text">Дата создания: {{ article.created_at|date:'Y-m-d' }}</p>
+            <p class="card-text">Cтатус: {{ article.get_status_display }}</p>
+            <p>Теги:
+                {% for tag in article.tags.all %}
+                    {{ tag.name }}{% if forloop.last %}. {% else %}, {% endif %}
+                    {% empty %}
+                    Нет ни одного тега
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+    {% if comments.exists %}
+        <p>Комментарии: </p>
+        {% for comment in comments %}
+            <p>{{ comment.text }}</p>
+            <p>{{ comment.author }}</p>
+            <p>{{ comment.created_at|date:"Y-m-d h:m:s" }}</p>
+            <a href="{% url "webapp:update_comment" comment.pk %}"
+                               class="btn btn-primary"><i class="bi bi-pencil-square"></i></a>
+            <a href="{% url "webapp:delete_comment" comment.pk %}" class="btn btn-primary"><i
+                                    class="bi bi-trash3"></i></a>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
