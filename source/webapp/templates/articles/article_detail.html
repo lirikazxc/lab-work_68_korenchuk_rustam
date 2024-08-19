@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block links %}
     <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="{% url 'webapp:update_article' article.pk %}">Редактировать</a>
@@ -28,6 +27,16 @@
                     Нет ни одного тега
                 {% endfor %}
             </p>
+                {% if request.user.is_authenticated %}
+                    <div class="btn-group r_btn" role="group">
+                        <a href="{% url 'webapp:article_like' article.pk %}" class="btn btn-danger like-btn">
+                                <i class="bi {% if article.user_liked %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                        </a>
+                        <a href="#" class="btn btn-danger pe-none">
+                            <span class="like-count">{{ article.like_count }}</span>
+                        </a>
+                    </div> 
+                {% endif %}
         </div>
     </div>
     {% if comments.exists %}
@@ -40,6 +49,15 @@
                                class="btn btn-primary"><i class="bi bi-pencil-square"></i></a>
             <a href="{% url "webapp:delete_comment" comment.pk %}" class="btn btn-primary"><i
                                     class="bi bi-trash3"></i></a>
+            
+            <div class="btn-group r_btn" role="group">
+              <a href="{% url 'webapp:comment_like' article.pk comment.pk %}" class="btn btn-danger like-btn">
+                  <i class="bi {% if comment.user_liked %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+              </a>
+              <a href="#" class="btn btn-danger">
+                  <span class="like-count">{{ comment.like_count }}</span>
+              </a>
+            </div>
         {% endfor %}
     {% endif %}
 {% endblock %}

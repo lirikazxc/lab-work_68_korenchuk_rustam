@@ -15,6 +15,12 @@ class Comment(BaseModel):
         on_delete=models.SET_DEFAULT,
         default=1
     )
+    like_users = models.ManyToManyField(get_user_model(),  related_name="like_comments", verbose_name="likes")
+    like_count = models.PositiveIntegerField(default=0)
+
+    def update_like_count(self):
+        self.like_count = self.like_users.count()
+        self.save()
 
     def __str__(self):
         return self.text[:20]

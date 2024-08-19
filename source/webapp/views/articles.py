@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.utils.http import urlencode
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, View
 
 from webapp.forms import ArticleForm, SearchForm
 from webapp.models import Article
@@ -44,6 +45,18 @@ class ArticleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        articles = context['object_list']
+        user = self.request.user
+
+        if user.is_authenticated:
+            for article in articles:
+                article.user_liked = article.like_users.filter(id=user.id).exists()
+                article.like_count = article.like_users.count()
+        else:
+            for article in articles:
+                article.user_liked = False
+
+        context['articles'] = articles
         context["search_form"] = self.form
         if self.search_value:
             context["search"] = urlencode({"search": self.search_value})
@@ -64,7 +77,7 @@ class ArticleDetailView(DetailView):
     template_name = "articles/article_detail.html"
     model = Article
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self,**kwargs):
         context = super().get_context_data(**kwargs)
         context["comments"] = self.object.comments.order_by("-created_at")
         return context
@@ -89,3 +102,21 @@ class DeleteArticleView(PermissionRequiredMixin, DeleteView):
 
     def has_permission(self):
         return super().has_permission() or self.request.user == self.get_object().author
+
+
+class LikeArticleView(LoginRequiredMixin, View):
+    def get(self, request, *args, pk, **kwargs):
+        article = get_object_or_404(Article, pk=pk)
+        if request.user in article.like_users.all():
+            article.like_users.remove(request.user)
+            liked = False
+        else:
+            article.like_users.add(request.user)
+            liked = True
+
+        article.update_like_count()
+        data = {
+            'liked': liked,
+            'like_count': article.like_users.count()
+        }
+        return JsonResponse(data)
