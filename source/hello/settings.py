@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webapp',
-    'accounts'
+    'accounts',
+    "calculator"
 ]
 
 MIDDLEWARE = [
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'hello.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env.str("NAME"),
+        'NAME': env.str('NAME'),
         'USER': env.str("USER"),
         'PASSWORD': env.str("PASSWORD"),
         'HOST': env.str("HOST"),
