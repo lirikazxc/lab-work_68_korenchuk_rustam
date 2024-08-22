@@ -1,7 +1,7 @@
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.views.generic import TemplateView
 
 
 @csrf_exempt
@@ -42,3 +42,7 @@ def calculate(request, operation):
 
     except (json.JSONDecodeError, TypeError):
         return JsonResponse({"error": "Invalid input!"}, status=400)
+
+
+class IndexView(TemplateView):
+    template_name = 'index.html'
