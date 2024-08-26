@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.messages import api
 from django.urls import path, include
 from django.conf.urls.static import static
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path('', include("webapp.urls")),
     path('accounts/', include("accounts.urls")),
     path('', include("calculator.urls")),
+    path('api/', include("api_v2.urls")),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
